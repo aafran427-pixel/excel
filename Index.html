@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মাছের খামারের বার্ষিক লাভ-লোকসান বিশ্লেষণ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #F0F4F8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#003F5C] mb-2">মাছের খামারের বার্ষিক লাভ-লোকসান বিশ্লেষণ</h1>
+            <p class="text-lg text-gray-600">আপনার Google Sheet থেকে আসা লাইভ আর্থিক কার্যকলাপের চিত্র</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row justify-around items-center text-center">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-500 mb-2">সর্বমোট বার্ষিক আয়</h2>
+                    <p id="total-income" class="text-5xl font-bold text-[#003F5C]">৳১২,০০,০০০</p>
+                </div>
+                <div class="text-5xl font-thin text-gray-300 my-4 md:my-0">-</div>
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-500 mb-2">সর্বমোট বার্ষিক ব্যয়</h2>
+                    <p id="total-expense" class="text-5xl font-bold text-[#BC5090]">৳৮,৫০,০০০</p>
+                </div>
+                <div class="text-5xl font-thin text-gray-300 my-4 md:my-0">=</div>
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-500 mb-2">নীট বার্ষিক লাভ</h2>
+                    <p id="net-profit" class="text-5xl font-bold text-green-600">৳৩,৫০,০০০</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-center text-[#003F5C] mb-4">আয়ের উৎস breakdown</h3>
+                <p class="text-center text-gray-600 mb-4">খামারের মোট আয়ের সিংহভাগই আসে সরাসরি মাছ বিক্রি থেকে, যা ব্যবসার স্থিতিশীলতার পরিচায়ক।</p>
+                <div class="chart-container">
+                    <canvas id="incomeSourceChart"></canvas>
+                </div>
+            </div>
+           
+            <div class="bg-white rounded-lg shadow-lg p-6 lg:col-span-2">
+                <h3 class="text-2xl font-bold text-center text-[#003F5C] mb-4">খরচের প্রধান খাতসমূহ</h3>
+                <p class="text-center text-gray-600 mb-4">মাছের খাবার বা ফিড হলো খরচের প্রধান খাত, যা মোট ব্যয়ের একটি বড় অংশ। এরপরেই রয়েছে শ্রমিকের মজুরি এবং পোনা ক্রয়ের খরচ।</p>
+                <div class="chart-container h-80 md:h-[420px]">
+                    <canvas id="expenseCategoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-center text-[#003F5C] mb-4">মাসিক আয় বনাম ব্যয়ের প্রবণতা</h3>
+                <p class="text-center text-gray-600 mb-4">এই চার্টটি সারা বছরের আয় এবং ব্যয়ের প্রবাহ তুলে ধরে। বছরের শেষার্ধে, বিশেষ করে উৎসবের সময়ে, মাছ বিক্রির পরিমাণ বাড়ার সাথে সাথে আয়ও বৃদ্ধি পেয়েছে।</p>
+                <div class="chart-container max-w-none h-80 md:h-96">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 bg-[#003F5C] text-white rounded-lg shadow-lg p-8 flex flex-col justify-center items-center text-center">
+                <h3 class="text-2xl font-bold mb-2">লাভজনকতার মার্জিন</h3>
+                <p id="profit-margin" class="text-7xl font-bold mb-2">২৯.১৭%</p>
+                <p class="text-lg">প্রতি ১০০ টাকা আয়ের বিপরীতে লাভজনকতার হার দেখাচ্ছে।</p>
+            </div>
+
+            <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-8">
+                <h3 class="text-2xl font-bold text-[#003F5C] mb-4">উপসংহার এবং ভবিষ্যৎ পরামর্শ</h3>
+                <p class="text-gray-600 mb-4">সার্বিকভাবে, খামারটি একটি লাভজনক বছর পার করেছে। তবে, লাভ আরও বাড়ানোর সুযোগ রয়েছে। ডেটা বিশ্লেষণ করে কিছু গুরুত্বপূর্ণ দিক চিহ্নিত করা হয়েছে:</p>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <span class="text-green-500 text-2xl mr-3">✔</span>
+                        <div>
+                            <h4 class="font-bold">খরচ নিয়ন্ত্রণ:</h4>
+                            <p class="text-gray-600">যেহেতু মাছের খাবারই প্রধান খরচ, তাই বিকল্প এবং সাশ্রয়ী ফিড ব্যবহারের গবেষণা করা যেতে পারে। এতে লাভজনকতা উল্লেখযোগ্যভাবে বৃদ্ধি পাবে।</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-yellow-500 text-2xl mr-3">✔</span>
+                        <div>
+                            <h4 class="font-bold">আয়ের বহুমুখীকরণ:</h4>
+                            <p class="text-gray-600">শুধুমাত্র মাছ বিক্রির উপর নির্ভর না করে, পোনা উৎপাদন বা পুকুর লিজ দেওয়ার মতো অন্যান্য আয়ের উৎস তৈরি করার কথা ভাবা যেতে পারে।</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-500 text-2xl mr-3">✔</span>
+                        <div>
+                            <h4 class="font-bold">বাজার বিশ্লেষণ:</h4>
+                            <p class="text-gray-600">বছরের কোন সময়ে মাছের দাম সর্বোচ্চ থাকে, তা চিহ্নিত করে সেই অনুযায়ী মাছ বাজারজাত করলে আয় আরও বাড়ানো সম্ভব।</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+           
+        </main>
+       
+        <footer class="text-center text-gray-500 mt-12 py-4 border-t">
+            <p>এই ইনফোগ্রাফিকটি আপনার Google Sheet থেকে আসা লাইভ ডেটার উপর ভিত্তি করে তৈরি।</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tooltipTitleCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        function wrapLabel(label, maxWidth) {
+            if (label.length <= maxWidth) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        // Apps Script Data Injection Function
+        function updateDashboard(data) {
+            document.getElementById('total-income').innerText = '৳' + formatNumber(data.kpi.totalIncome);
+            document.getElementById('total-expense').innerText = '৳' + formatNumber(data.kpi.totalExpense);
+            document.getElementById('net-profit').innerText = '৳' + formatNumber(data.kpi.netProfit);
+            document.getElementById('profit-margin').innerText = data.kpi.profitMargin.toFixed(2) + '%';
+           
+            initializeCharts(data);
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-IN');
+        }
+
+        function initializeCharts(data) {
+            const incomeSourceCtx = document.getElementById('incomeSourceChart').getContext('2d');
+            new Chart(incomeSourceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.income.labels,
+                    datasets: [{
+                        label: 'আয়ের উৎস',
+                        data: data.income.data,
+                        backgroundColor: ['#003F5C', '#FFA600'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    family: "'Hind Siliguri', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: tooltipTitleCallback.plugins.tooltip
+                    }
+                }
+            });
+
+            const expenseLabelsWrapped = data.expense.labels.map(l => wrapLabel(l, 16));
+            const expenseCategoryCtx = document.getElementById('expenseCategoryChart').getContext('2d');
+            new Chart(expenseCategoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: expenseLabelsWrapped,
+                    datasets: [{
+                        label: 'টাকায় খরচ',
+                        data: data.expense.data,
+                        backgroundColor: ['#003F5C', '#374C80', '#7A5195', '#BC5090', '#EF5675', '#FF764A', '#FFA600'],
+                        borderRadius: 5,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: tooltipTitleCallback.plugins.tooltip
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                               font: { family: "'Hind Siliguri', sans-serif" }
+                            }
+                        },
+                        y: {
+                            grid: {
+                               display: false
+                            },
+                            ticks: {
+                               font: { family: "'Hind Siliguri', sans-serif", size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            new Chart(monthlyTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['জানু', 'ফেব', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্ট', 'অক্টো', 'নভে', 'ডিসে'],
+                    datasets: [{
+                        label: 'মোট আয়',
+                        data: data.monthly.income,
+                        borderColor: '#003F5C',
+                        backgroundColor: 'rgba(0, 63, 92, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'মোট ব্যয়',
+                        data: data.monthly.expense,
+                        borderColor: '#BC5090',
+                        backgroundColor: 'rgba(188, 80, 144, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                               font: { family: "'Hind Siliguri', sans-serif" }
+                            }
+                        },
+                        tooltip: tooltipTitleCallback.plugins.tooltip
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                               font: { family: "'Hind Siliguri', sans-serif" }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                               color: '#e0e0e0'
+                            },
+                            ticks: {
+                               font: { family: "'Hind Siliguri', sans-serif" }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+       
+        // Load data from Google Apps Script after the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if google.script is available (running as a deployed Web App)
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(updateDashboard).getDashboardData();
+            } else {
+                // Use placeholder data if running standalone (to prevent ReferenceError: google is not defined)
+                const placeholderData = {
+                    kpi: { totalIncome: 1200000, totalExpense: 850000, netProfit: 350000, profitMargin: 29.166666 },
+                    income: { labels: ['মাছ বিক্রয়', 'অন্যান্য আয়'], data: [1150000, 50000] },
+                    expense: {
+                        labels: ['মাছের খাবার (ফিড)', 'শ্রমিক মজুরি', 'পোনা ক্রয়', 'পুকুর ভাড়া', 'ওষুধ ও রাসায়নিক', 'বিদ্যুৎ এবং জ্বালানি খরচ', 'অন্যান্য'],
+                        data: [400000, 150000, 120000, 100000, 50000, 20000, 10000]
+                    },
+                    monthly: {
+                        income: [60000, 75000, 80000, 90000, 100000, 110000, 120000, 115000, 130000, 150000, 90000, 80000],
+                        expense: [70000, 72000, 65000, 68000, 75000, 80000, 85000, 70000, 65000, 70000, 60000, 70000]
+                    }
+                };
+                updateDashboard(placeholderData);
+            }
+        });
+
+    </script>
+
+</body>
+</html>
+
