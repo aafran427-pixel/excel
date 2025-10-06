@@ -4,7 +4,7 @@
 function doGet() {
   return HtmlService.createTemplateFromFile('Index')
       .evaluate()
-      .setTitle('মাছের খামারের বার্ষিক লাভ-লোকসান বিশ্লেষণ');
+      .setTitle('নিরাপদ ফিসারি লেনদেন');
 }
 
 /**
